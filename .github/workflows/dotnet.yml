@@ -1,0 +1,64 @@
+name: .NET
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "Osu.Beatmap.Plus/**"
+      - "Osu.Beatmap.Plus.Core/**"
+  pull_request:
+    paths:
+      - "Osu.Beatmap.Plus/**"
+      - "Osu.Beatmap.Plus.Core/**"
+
+jobs:
+  test:
+    name: Test
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.x
+
+      - name: Dotnet Build
+        run: dotnet build --configuration Debug
+
+      - name: Dotnet Test
+        run: dotnet test --no-build --configuration Debug --verbosity normal
+
+  code-format:
+    name: Code Format
+    needs: test
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.x
+
+      - name: Dotnet Install Tool
+        run: dotnet tool install -g dotnet-format --version "6.*" --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet7/nuget/v3/index.json
+
+      - name: Dotnet Format
+        id: dotnet_format
+        run: dotnet format
+
+      - name: Automatically Commit Changed
+        if: steps.dotnet_format.outcome == 'success'
+        id: commit_changed
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          push_options: "--force"
+          commit_options: "--no-verify"
+          commit_message: "Code Formatter!"
+          commit_user_name: GitHub Actions
+          commit_user_email: actions@github.com
+          commit_author: GitHub Actions <actions@github.com>
+          skip_checkout: true

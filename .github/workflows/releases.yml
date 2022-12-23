@@ -1,0 +1,63 @@
+name: Release
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version"
+        required: true
+      release:
+        type: choice
+        description: "Configuration"
+        required: true
+        options:
+          - Release
+      prerelease:
+        description: "This is a Pre Release"
+        required: false
+        type: boolean
+  release:
+    types: [created]
+
+jobs:
+  Releases:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.x
+
+      - name: Dotnet Install Tool
+        run: |
+          dotnet tool install --global csq --version 3.0.210-g5f9f594
+
+      - name: Dotnet Build
+        run: dotnet build --configuration ${{ github.event.inputs.release }} -p:Version=${{ github.event.inputs.version || github.ref_name }}
+
+      - name: Dotnet Test
+        run: dotnet test --no-build --configuration ${{ github.event.inputs.release }} --verbosity normal
+
+      - name: Dotnet Publish
+        run: dotnet publish -p:Version=${{ github.event.inputs.version || github.ref_name }} -c:${{ github.event.inputs.release }} -o:".\Publish" --self-contained false
+
+      - name: Build Squirrel
+        run: csq pack --packId "Osu.Beatmap.Plus" --packTitle "Osu Beatmap Plus" --packVersion ${{ github.event.inputs.version || github.ref_name }} --packAuthors "Faelayis" --icon "${{ github.workspace }}\Osu.Beatmap.Plus\Assets\applicationIcon.ico" --packDir "./Publish" --releaseDir "${{ github.workspace }}\Releases" --allowUnaware
+
+      - name: Create Releases
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          prerelease: ${{ github.event.inputs.prerelease || false }}
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+          files: |
+            ./Releases/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

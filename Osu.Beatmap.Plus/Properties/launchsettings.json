@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Osu.Beatmap.Plus (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Osu.Beatmap.Plus (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

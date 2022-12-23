@@ -1,0 +1,43 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "--p:Platform=x64",
+                "${workspaceFolder}/Osu.Beatmap.Plus/Osu.Beatmap.Plus.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "--p:Platform=x64",
+                "${workspaceFolder}/Osu.Beatmap.Plus/Osu.Beatmap.Plus.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/Osu.Beatmap.Plus/Osu.Beatmap.Plus.csproj",
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}

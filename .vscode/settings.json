@@ -1,0 +1,11 @@
+{
+	"omnisharp.autoStart": true,
+	"[csharp]": {
+		"editor.defaultFormatter": "ms-dotnettools.csharp"
+	},
+	"omnisharp.useModernNet": true,
+	"omnisharp.enableMsBuildLoadProjectsOnDemand": true,
+	"omnisharp.enableEditorConfigSupport": false,
+	"omnisharp.enableRoslynAnalyzers": false,
+	"omnisharp.analyzeOpenDocumentsOnly": false
+}
